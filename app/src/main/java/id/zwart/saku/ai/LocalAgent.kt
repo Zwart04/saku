@@ -204,6 +204,13 @@ object MoneyAgent {
         return category to merchant
     }
 
+    private fun normalize(s: String): String =
+        s.lowercase()
+            .replace("–", "-")
+            .replace("—", "-")
+            .replace(Regex("""\s+"""), " ")
+            .trim()
+
     private val STOP_WORDS = setOf(
         "catat", "catatkan", "belanja", "beli", "bayar", "tadi", "habis", "sudah",
         "saya", "aku", "gue", "gua", "gw", "makan", "pengeluaran",

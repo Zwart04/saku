@@ -43,6 +43,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -137,13 +138,19 @@ fun AppRoot() {
             chats = chats + ChatMessage(false, text)
             scope.launch {
                 val result = MoneyAgent.run(text, expenses, cards)
-                when (result) {
-                    is AgentResult.Recorded -> repo.add(result.expense)
-                    is AgentResult.DashboardUpdated -> repo.saveDashboard(result.cards)
-                    is AgentResult.Info -> Unit
+                val message = when (result) {
+                    is AgentResult.Recorded -> {
+                        repo.add(result.expense)
+                        result.message
+                    }
+                    is AgentResult.DashboardUpdated -> {
+                        repo.saveDashboard(result.cards)
+                        result.message
+                    }
+                    is AgentResult.Info -> result.message
                 }
                 refresh()
-                chats = chats + ChatMessage(true, result.message)
+                chats = chats + ChatMessage(true, message)
             }
             input = ""
         }
