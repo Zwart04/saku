@@ -1,0 +1,11 @@
+*.o
+*.so
+*.apk.idsig
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
