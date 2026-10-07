@@ -1,11 +1,26 @@
-*.o
-*.so
-*.apk.idsig
-.gradle/
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
 build/
-local.properties
-.idea/
 *.iml
-captures/
-.externalNativeBuild/
-.cxx/
+.idea/
+
+# Android
+android/.gradle/
+android/local.properties
+android/key.properties
+android/app/.cxx/
+android/captures/
+
+# iOS (tidak dipakai tapi tetap)
+ios/Pods/
+ios/.symlinks/
+
+# Lainnya
+_native/
+**/apk/*.apk
+!apk/Saku-*-release.apk

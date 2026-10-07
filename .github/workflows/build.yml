@@ -1,8 +1,8 @@
-name: Build APK
+name: Build APK (Flutter)
 
 on:
   push:
-    branches: [main]
+    branches: [main, flutter-rewrite]
     tags: ['v*']
   pull_request:
   workflow_dispatch:
@@ -22,31 +22,42 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          gradle-version: '8.10.2'
+          channel: stable
+          flutter-version: 3.47.6
+          cache: true
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: flutter test
+        run: flutter test
+
+      - name: flutter analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Build signed APK
-        run: gradle assembleRelease --no-daemon --stacktrace
+        run: flutter build apk --release
 
       - name: Prepare APK file
         run: |
           mkdir -p apk
-          cp app/build/outputs/apk/release/app-release.apk apk/Saku-1.0.0-release.apk
+          cp build/app/outputs/flutter-apk/app-release.apk apk/Saku-1.1.0-release.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Saku-APK
+          name: Saku-Flutter-APK
           path: apk/*.apk
 
       - name: Commit APK to repo
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.event_name == 'push'
         run: |
           git config user.name "saku-builder"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add apk/Saku-1.0.0-release.apk
+          git add apk/Saku-1.1.0-release.apk
           if git diff --cached --quiet; then
             echo "Tidak ada perubahan APK"
           else
@@ -62,9 +73,9 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: Saku-APK
+          name: Saku-Flutter-APK
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: Saku-1.0.0-release.apk
+          files: Saku-1.1.0-release.apk
